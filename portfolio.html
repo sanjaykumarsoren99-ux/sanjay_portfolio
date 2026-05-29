@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanjay Kumar Soren — Portfolio</title>
+    <style>
+        /* --- EXPERIMENTAL CINEMATIC WORKSPACE --- */
+        :root {
+            --bg-color: #0d0d0d;
+            --text-color: #f7f7f7;
+            --accent-color: #bbbbbb; /* Tagline brightness increased */
+            --meta-color: #b0b0b0;   /* Film details/year brightness increased */
+            --highlight: #ffffff;
+            --mono-font: 'Courier New', Courier, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- FULL SCREEN CINEMATIC CANVAS --- */
+        .bg-video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1); 
+            overflow: hidden;
+            background: #000;
+        }
+
+        .bg-video-overlay img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 100vh;
+            transform: translate(-50%, -50%) scale(1.05);
+            object-fit: cover;
+            transition: transform 0.8s ease;
+        }
+
+        .bg-video-overlay.active {
+            opacity: 0.35; 
+        }
+
+        /* --- NAVIGATION & VISIBILITY FIXES --- */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+        }
+
+        .meta-brand h1 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-brand p {
+            font-family: var(--mono-font);
+            font-size: 0.75rem;
+            color: var(--accent-color); /* Brightened Tagline */
+            text-transform: uppercase;
+        }
+
+        .nav-controls a {
+            font-family: var(--mono-font);
+            font-size: 0.75rem;
+            color: #aaaaaa; /* Increased default visibility for contact button */
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: 1px solid #444; /* Higher contrast border */
+            padding: 0.4rem 1.2rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .nav-controls a:hover {
+            color: var(--highlight);
+            border-color: var(--highlight);
+            background-color: #1a1a1a;
+        }
+
+        /* --- DIRECTORY ARCHIVE INDEX --- */
+        main {
+            position: relative;
+            z-index: 5;
+            padding: 22vh 3rem 6rem 3rem;
+            min-height: 100vh;
+        }
+
+        .index-list {
+            list-style: none;
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .list-section-title {
+            font-family: var(--mono-font);
+            font-size: 0.75rem;
+            color: #666666;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .list-item {
+            border-bottom: 1px solid #222222; /* Slightly brighter separator line */
+            padding: 2.2rem 0;
+            display: grid;
+            grid-template-columns: 100px 1fr 220px; /* Adjusted spacing for meta info */
+            align-items: center;
+            cursor: pointer;
+            transition: border-color 0.4s;
+        }
+
+        .list-item:hover {
+            border-color: #555;
+        }
+
+        .item-num {
+            font-family: var(--mono-font);
+            font-size: 0.75rem;
+            color: #666666;
+        }
+
+        .item-details h2 {
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            color: #999999; /* Enhanced title visibility before hover */
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s;
+        }
+
+        .list-item:hover .item-details h2 {
+            color: var(--highlight);
+            transform: translateX(15px);
+        }
+
+        .item-meta {
+            font-family: var(--mono-font);
+            font-size: 0.75rem;
+            color: var(--meta-color); /* Highly visible layout metadata */
+            text-align: right;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- CONTACT SECTION --- */
+        .contact-section {
+            max-width: 1100px;
+            margin: 12rem auto 4rem auto;
+            border-top: 1px solid #222222;
+            padding-top: 4rem;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 3rem;
+        }
+
+        @media (min-width: 768px) {
+            .contact-grid {
+                grid-template-columns: 1.5fr 1fr;
+            }
+        }
+
+        .contact-bio {
+            font-size: 1.25rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: #cccccc;
+        }
+
+        .contact-details {
+            font-family: var(--mono-font);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            line-height: 2;
+        }
+
+        .contact-details span {
+            color: #666666;
+            display: inline-block;
+            width: 100px;
+        }
+
+        .contact-details a {
+            color: var(--text-color);
+            text-decoration: none;
+            border-bottom: 1px solid var(--text-color);
+        }
+
+        footer {
+            padding: 3rem;
+            text-align: center;
+            font-family: var(--mono-font);
+            font-size: 0.65rem;
+            color: #333333;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        @media(max-width: 768px) {
+            .list-item {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+                padding: 1.8rem 0;
+            }
+            .item-meta { text-align: left; }
+            .item-details h2 { font-size: 1.8rem; }
+            header { padding: 1.5rem; }
+            main { padding: 15vh 1.5rem 6rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-video-overlay" id="videoOverlay"></div>
+
+    <header>
+        <div class="meta-brand">
+            <h1>Sanjay Kumar Soren</h1>
+            <p>Director & Screenplay Writer — FTII, Pune</p>
+        </div>
+        <div class="nav-controls">
+            <a href="#contact">Contact</a>
+        </div>
+    </header>
+
+    <main>
+        
+        <div style="margin-bottom: 2rem;">
+            <p class="list-section-title">// Moving Images</p>
+            <ul class="index-list">
+                
+                <li class="list-item" data-media="image" data-src="https://i.postimg.cc/bJmCqgf2/Screenshot-2026-05-29-at-2-13-58-PM.png" onclick="window.open('https://www.youtube.com/watch?v=9XuYCZ6RBkw', '_blank')">
+                    <div class="item-num">[01]</div>
+                    <div class="item-details">
+                        <h2>Betaw</h2>
+                        <p style="font-size: 0.85rem; color:#666666; margin-top:0.3rem;">Short Film — Long take</p>
+                    </div>
+                    <div class="item-meta">Director / Writer / 2025</div>
+                </li>
+
+                <li class="list-item" data-media="image" data-src="https://i.postimg.cc/mDPMFyFj/Screenshot-2025-05-03-at-1-14-13-AM.png" onclick="window.open('https://www.youtube.com/watch?v=YOUR_YOUTUBE_ID_02', '_blank')">
+                    <div class="item-num">[02]</div>
+                    <div class="item-details">
+                        <h2>While the river flows</h2>
+                        <p style="font-size: 0.85rem; color:#666666; margin-top:0.3rem;">Documentary</p>
+                    </div>
+                    <div class="item-meta">Director / Writer / 2025</div>
+                </li>
+
+                <li class="list-item" data-media="image" data-src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=1925" onclick="window.open('https://www.youtube.com/watch?v=YOUR_YOUTUBE_ID_03', '_blank')">
+                    <div class="item-num">[03]</div>
+                    <div class="item-details">
+                        <h2>Invisible Cocoon</h2>
+                        <p style="font-size: 0.85rem; color:#666666; margin-top:0.3rem;">Short Film</p>
+                    </div>
+                    <div class="item-meta">Director / Writer / 2025</div>
+                </li>
+
+            </ul>
+        </div>
+
+        <div class="contact-section" id="contact">
+            <p class="list-section-title">// Info & Coordinates</p>
+            <div class="contact-grid">
+                <div class="contact-bio">
+                    I am a filmmaker and screenwriter based in India, exploring text-to-visual transitions, atmosphere-heavy environments, and sharp narrative structures. My work merges classical film sensibilities with modern world-building aesthetics.
+                </div>
+                <div class="contact-details">
+                    <p><span>Training</span>Film & Television Institute of India (FTII), Pune</p>
+                    <p><span>Location</span>Pune, India</p>
+                    <p><span>Inquiries</span><a href="mailto:sanjaykumarsoren99@gmail.com">sanjaykumarsoren99@gmail.com</a></p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        &copy; 2026 — Structural Workspace.
+    </footer>
+
+    <script>
+        const overlay = document.getElementById('videoOverlay');
+        const listItems = document.querySelectorAll('.list-item[data-media]');
+        
+        listItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                const src = item.getAttribute('data-src');
+                overlay.innerHTML = `<img src="${src}" alt="Film Canvas Layout">`;
+                overlay.classList.add('active');
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                overlay.classList.remove('active');
+                overlay.innerHTML = ''; 
+            });
+        });
+    </script>
+</body>
+</html>
