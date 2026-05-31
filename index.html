@@ -138,10 +138,16 @@
             align-items: center;
             cursor: pointer;
             transition: border-color 0.4s;
+            -webkit-tap-highlight-color: transparent; /* Mobile blue tap flash wrap fix */
         }
 
         .list-item:hover {
             border-color: #555;
+        }
+
+        /* Dynamic first-tap state for mobile layout */
+        .list-item.touched {
+            border-color: #777;
         }
 
         .item-num {
@@ -159,7 +165,8 @@
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.3s;
         }
 
-        .list-item:hover .item-details h2 {
+        .list-item:hover .item-details h2,
+        .list-item.touched .item-details h2 {
             color: var(--highlight);
             transform: translateX(15px);
         }
@@ -244,8 +251,10 @@
 </head>
 <body>
 
+    <!-- OVERLAY BACKGROUND CANVAS -->
     <div class="bg-video-overlay" id="videoOverlay"></div>
 
+    <!-- MAIN BRAND HEADER -->
     <header>
         <div class="meta-brand">
             <h1>Sanjay Kumar Soren</h1>
@@ -256,13 +265,16 @@
         </div>
     </header>
 
+    <!-- MAIN INTERFACE ARCHIVE -->
     <main>
         
+        <!-- SECTION: DIRECTED FILMS -->
         <div style="margin-bottom: 2rem;">
             <p class="list-section-title">// Moving Images</p>
             <ul class="index-list">
                 
-                <li class="list-item" data-media="image" data-src="https://i.postimg.cc/HnK9zLCJ/betaw-screenshot.webp" onclick="window.open('https://www.youtube.com/watch?v=9XuYCZ6RBkw', '_blank')">
+                <!-- FILM 01: BETAW -->
+                <li class="list-item" data-media="image" data-src="https://i.postimg.cc/HnK9zLCJ/betaw-screenshot.webp" data-link="https://www.youtube.com/watch?v=9XuYCZ6RBkw">
                     <div class="item-num">[01]</div>
                     <div class="item-details">
                         <h2>Betaw</h2>
@@ -271,7 +283,8 @@
                     <div class="item-meta">Director / Writer / 2025</div>
                 </li>
 
-                <li class="list-item" data-media="image" data-src="https://i.postimg.cc/x8735dSz/docu-screenshot.webp" onclick="window.open('https://www.youtube.com/watch?v=94KmVsV6yXM', '_blank')">
+                <!-- FILM 02: WHILE THE RIVER FLOWS -->
+                <li class="list-item" data-media="image" data-src="https://i.postimg.cc/x8735dSz/docu-screenshot.webp" data-link="https://www.youtube.com/watch?v=94KmVsV6yXM">
                     <div class="item-num">[02]</div>
                     <div class="item-details">
                         <h2>While the river flows</h2>
@@ -280,7 +293,8 @@
                     <div class="item-meta">Director / Writer / 2025</div>
                 </li>
 
-                <li class="list-item" data-media="image" data-src="https://i.postimg.cc/wMPQ2BdN/invisible-screenshot.webp" onclick="window.open('https://www.youtube.com/watch?v=UWo55kvQJkw', '_blank')">
+                <!-- FILM 03: INVISIBLE COCOON -->
+                <li class="list-item" data-media="image" data-src="https://i.postimg.cc/wMPQ2BdN/invisible-screenshot.webp" data-link="https://www.youtube.com/watch?v=UWo55kvQJkw">
                     <div class="item-num">[03]</div>
                     <div class="item-details">
                         <h2>Invisible Cocoon</h2>
@@ -292,6 +306,7 @@
             </ul>
         </div>
 
+        <!-- INTEGRATED CONTACT & BIO SECTION -->
         <div class="contact-section" id="contact">
             <p class="list-section-title">// Info & Coordinates</p>
             <div class="contact-grid">
@@ -312,22 +327,67 @@
         &copy; 2026 — Structural Workspace.
     </footer>
 
+    <!-- RESPONSIVE HYBRID STREAM ENGINE -->
     <script>
         const overlay = document.getElementById('videoOverlay');
-        const listItems = document.querySelectorAll('.list-item[data-media]');
+        const listItems = document.querySelectorAll('.list-item');
         
-        listItems.forEach(item => {
-            item.addEventListener('mouseenter', () => {
-                const src = item.getAttribute('data-src');
-                overlay.innerHTML = `<img src="${src}" alt="Film Canvas Layout">`;
-                overlay.classList.add('active');
+        // Mobile capabilities checker
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        if (!isTouchDevice) {
+            // DESKTOP INTERACTION: Traditional sleek hover stream
+            listItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    const src = item.getAttribute('data-src');
+                    overlay.innerHTML = `<img src="${src}" alt="Film Canvas Layout">`;
+                    overlay.classList.add('active');
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    overlay.classList.remove('active');
+                    overlay.innerHTML = ''; 
+                });
+
+                item.addEventListener('click', () => {
+                    const url = item.getAttribute('data-link');
+                    window.open(url, '_blank');
+                });
             });
-            
-            item.addEventListener('mouseleave', () => {
-                overlay.classList.remove('active');
-                overlay.innerHTML = ''; 
+        } else {
+            // SMARTPHONE INTERACTION: Kinetic Two-Tap Gesture Filter
+            listItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    const src = item.getAttribute('data-src');
+                    const url = item.getAttribute('data-link');
+
+                    if (item.classList.contains('touched')) {
+                        // Second Tap: Link triggers successfully to YouTube cut
+                        window.open(url, '_blank');
+                    } else {
+                        // First Tap: Prevent window redirection, stream canvas & pop visual text
+                        e.preventDefault();
+                        
+                        listItems.forEach(el => {
+                            el.classList.remove('touched');
+                        });
+                        
+                        item.classList.add('touched');
+                        overlay.innerHTML = `<img src="${src}" alt="Film Canvas Layout">`;
+                        overlay.classList.add('active');
+                    }
+                });
             });
-        });
+
+            // Tap anywhere on the empty environment to kill active overlays
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.list-item')) {
+                    listItems.forEach(el => el.classList.remove('touched'));
+                    overlay.classList.remove('active');
+                    overlay.innerHTML = '';
+                }
+            });
+        }
     </script>
 </body>
 </html>
